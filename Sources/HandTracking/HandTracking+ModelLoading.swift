@@ -1,0 +1,78 @@
+import RealityKit
+import ARKit
+
+public extension HandTracking {
+    /// Loads a 3D model and attaches it to the right hand entity
+    /// - Parameters:
+    ///   - modelName: The name of the model to load (without file extension)
+    ///   - completion: Optional completion handler that provides the loaded entity
+    func loadModelForRightHand(modelName: String, completion: ((Entity?) -> Void)? = nil) {
+        Task { @MainActor in
+            do {
+                // Try to load the model from the main bundle first
+                if let modelEntity = try? ModelEntity.load(named: modelName) {
+                    attachModelToRightHand(modelEntity)
+                    completion?(modelEntity)
+                    return
+                }
+                
+                // If not found in main bundle, try to load from the package bundle
+                if let modelEntity = try? ModelEntity.load(named: modelName, in: Bundle.module) {
+                    attachModelToRightHand(modelEntity)
+                    completion?(modelEntity)
+                    return
+                }
+                
+                print("Failed to load model: \(modelName)")
+                completion?(nil)
+            }
+        }
+    }
+    
+    /// Loads a 3D model from a URL and attaches it to the right hand entity
+    /// - Parameters:
+    ///   - url: The URL of the model to load
+    ///   - completion: Optional completion handler that provides the loaded entity
+    func loadModelForRightHand(from url: URL, completion: ((Entity?) -> Void)? = nil) {
+        Task { @MainActor in
+            do {
+                let modelEntity = try ModelEntity.load(contentsOf: url)
+                attachModelToRightHand(modelEntity)
+                completion?(modelEntity)
+            } catch {
+                print("Failed to load model from URL: \(error)")
+                completion?(nil)
+            }
+        }
+    }
+    
+    /// Removes any currently attached model from the right hand
+    func removeModelFromRightHand() {
+        Task { @MainActor in
+            // Remove all child entities that are ModelEntity instances
+            rightHandEntity.children.forEach { child in
+                if child is ModelEntity {
+                    child.removeFromParent()
+                }
+            }
+        }
+    }
+    
+    // MARK: - Private Methods
+    
+    private func attachModelToRightHand(_ modelEntity: ModelEntity) {
+        Task { @MainActor in
+            // Remove any existing model
+            removeModelFromRightHand()
+            
+            // Add the new model
+            rightHandEntity.addChild(modelEntity)
+            
+            // Center the model on the hand
+            modelEntity.position = .zero
+            
+            // Optional: Add collision component if needed
+            modelEntity.components.set(CollisionComponent(shapes: [.generateBox(size: modelEntity.visualBounds(relativeTo: nil).extents)], mode: .trigger))
+        }
+    }
+} 

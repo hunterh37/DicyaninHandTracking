@@ -9,6 +9,12 @@ import RealityKit
 import ARKit
 import SwiftUI
 
+/// Registers all required components and systems for hand tracking
+public static func registerComponents() {
+    // Register the FingerVisualizationEntity component
+    FingerVisualizationEntity.registerComponent()
+}
+
 /// Protocol defining the interface for hand tracking functionality
 public protocol HandTrackingProtocol: ObservableObject {
     var latestHandTracking: HandAnchorUpdate { get }
