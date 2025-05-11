@@ -51,11 +51,6 @@ struct ImmersiveView: View {
             Task {
                 await handTracking.start()
             }
-        } update: { content in
-            // Update hand tracking visualization
-            if handTracking.latestHandTracking.right != nil {
-                handTracking.setAllFingersActive(true, duration: nil, addCollision: true)
-            }
         }
         .onDisappear {
             // Clean up hand tracking when view disappears
