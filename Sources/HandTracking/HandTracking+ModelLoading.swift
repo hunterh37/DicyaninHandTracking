@@ -71,8 +71,15 @@ public extension HandTracking {
             // Center the model on the hand
             modelEntity.position = .zero
             
-            // Optional: Add collision component if needed
+            // Add collision component
             modelEntity.components.set(CollisionComponent(shapes: [.generateBox(size: modelEntity.visualBounds(relativeTo: nil).extents)], mode: .trigger))
+            
+            // Add tool collision trigger component
+            let trigger = ToolCollisionTriggerComponent(
+                totalStages: 1,
+                stageDescriptions: ["Ready for interaction"]
+            )
+            modelEntity.toolCollisionTrigger = trigger
         }
     }
 } 

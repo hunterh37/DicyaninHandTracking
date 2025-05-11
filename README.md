@@ -113,11 +113,20 @@ The main class for hand tracking functionality.
 
 #### Methods
 
-- `start()`: Start hand tracking
+- `start(showHandVisualizations:)`: Start hand tracking with optional hand visualization
 - `stop()`: Stop hand tracking
 - `highlightFinger(_:hand:duration:isActive:)`: Highlight a specific finger
 - `setFingerActive(_:onHand:isActive:)`: Set a finger's active state
 - `setAllFingersActive(_:duration:addCollision:)`: Set all fingers' active state
+
+Example usage:
+```swift
+// Start with hand visualizations (default)
+await handTracking.start()
+
+// Start without hand visualizations
+await handTracking.start(showHandVisualizations: false)
+```
 
 #### Model Loading Methods
 
@@ -125,26 +134,34 @@ The main class for hand tracking functionality.
 - `loadModelForRightHand(from:completion:)`: Load a 3D model from a URL and attach it to the right hand
 - `removeModelFromRightHand()`: Remove any currently attached model from the right hand
 
+### Interaction System
+
+The package includes a built-in interaction system for hand-held tools:
+
+#### Tool Interaction Components
+
+- `ToolInteractionTargetComponent`: Defines objects that can be interacted with using hand-held tools
+- `ToolCollisionTriggerComponent`: Defines the interaction stages and progression for hand-held tools
+- `CollisionSubscriptionComponent`: Manages collision event subscriptions
+
 Example usage:
 ```swift
-// Load a model by name
-handTracking.loadModelForRightHand(modelName: "sword") { entity in
+// Create an interaction target
+let targetEntity = ModelEntity(mesh: .generateBox(size: 0.1))
+targetEntity.setupToolInteractionTarget(
+    stage: 0,
+    interactionData: ["action": "activate"],
+    collisionGroup: .interactionTarget,
+    collisionMask: .tool
+)
+
+// Load a tool model that will interact with targets
+handTracking.loadModelForRightHand(modelName: "tool") { entity in
     if let entity = entity {
-        print("Model loaded successfully")
+        // The tool is automatically set up with collision detection
+        // and will trigger interactions when colliding with targets
     }
 }
-
-// Load a model from URL
-if let url = URL(string: "https://example.com/models/sword.usdz") {
-    handTracking.loadModelForRightHand(from: url) { entity in
-        if let entity = entity {
-            print("Model loaded successfully")
-        }
-    }
-}
-
-// Remove the current model
-handTracking.removeModelFromRightHand()
 ```
 
 ### FingerVisualizationEntity

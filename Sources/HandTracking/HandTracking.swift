@@ -11,8 +11,10 @@ import SwiftUI
 
 /// Registers all required components and systems for hand tracking
 public static func registerComponents() {
-    // Register the FingerVisualizationEntity component
-    FingerVisualizationEntity.registerComponent()
+    // Register interaction components
+    ToolInteractionTargetComponent.registerComponent()
+    ToolCollisionTriggerComponent.registerComponent()
+    CollisionSubscriptionComponent.registerComponent()
 }
 
 /// Protocol defining the interface for hand tracking functionality
@@ -21,7 +23,7 @@ public protocol HandTrackingProtocol: ObservableObject {
     var isRightHanded: Bool { get set }
     var controlRootEntity: Entity { get }
     
-    func start() async
+    func start(showHandVisualizations: Bool) async
     func stop()
     func highlightFinger(_ finger: HandSkeleton.JointName, hand: HandType, duration: TimeInterval?, isActive: Bool)
     func setFingerActive(_ finger: HandSkeleton.JointName, onHand isLeftHand: Bool, isActive: Bool)
@@ -62,7 +64,7 @@ public class HandTracking: HandTrackingProtocol {
     }
     
     // MARK: - Public Methods
-    public func start() async {
+    public func start(showHandVisualizations: Bool = true) async {
         Task { @MainActor in
             rightHandEntity.removeFromParent()
             leftHandEntity.removeFromParent()
@@ -71,7 +73,11 @@ public class HandTracking: HandTrackingProtocol {
             
             rootEntity.addChild(rightHandEntity)
             rootEntity.addChild(leftHandEntity)
-            initializeVisualizationFingerTips()
+            
+            if showHandVisualizations {
+                initializeVisualizationFingerTips()
+            }
+            
             await initializeHandTracking()
         }
     }
