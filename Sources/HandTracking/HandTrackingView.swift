@@ -45,21 +45,23 @@ public struct HandTrackingView: View {
             SIMD3<Float>(0, 0, 0.3)     // Forward
         ]
         
+        let boxSize = SIMD3<Float>(0.1, 0.1, 0.1)
+        
         // Create entities at each position
         for (index, position) in positions.enumerated() {
-            let entity = ModelEntity(mesh: .generateBox(size: 0.1))
+            let entity = ModelEntity(mesh: .generateBox(size: boxSize))
             entity.position = position
             
             // Add collision component
             entity.components.set(CollisionComponent(
-                shapes: [.generateBox(size: 0.1)],
+                shapes: [.generateBox(size: boxSize)],
                 mode: .trigger,
                 filter: CollisionFilter(group: .interactionTarget, mask: .tool)
             ))
             
             // Add physics body
             entity.components.set(PhysicsBodyComponent(
-                shapes: [.generateBox(size: 0.1)],
+                shapes: [.generateBox(size: boxSize)],
                 mass: 0,
                 mode: .static
             ))
