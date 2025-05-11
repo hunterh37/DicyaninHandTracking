@@ -215,6 +215,38 @@ public class HandTracking: HandTrackingProtocol {
         leftFingerVisualizationEntities.removeAll()
         rightFingerVisualizationEntities.removeAll()
     }
+    
+    /// Configures a trigger entity with the specified properties
+    /// - Parameters:
+    ///   - position: The position of the entity in 3D space
+    ///   - stage: The interaction stage this trigger belongs to (default: 0)
+    ///   - interactionData: Additional data for the interaction (default: nil)
+    ///   - onInteraction: Closure called when the entity is interacted with
+    /// - Returns: The configured ModelEntity
+    public static func configureTriggerEntity(
+        at position: SIMD3<Float>,
+        stage: Int = 0,
+        interactionData: [String: Any]? = nil,
+        onInteraction: (() -> Void)? = nil
+    ) -> ModelEntity {
+        // Create the entity with a proper 3D model
+        let entity = ModelEntity(mesh: .generateSphere(radius: 0.05))
+        entity.position = position
+        
+        // Setup interaction target
+        entity.setupToolInteractionTarget(
+            stage: stage,
+            interactionData: interactionData,
+            collisionGroup: .interactionTarget,
+            collisionMask: .tool,
+            onInteraction: onInteraction
+        )
+        
+        // Add to root entity
+        rootEntity.addChild(entity)
+        
+        return entity
+    }
 }
 
 /// Represents the type of hand being tracked

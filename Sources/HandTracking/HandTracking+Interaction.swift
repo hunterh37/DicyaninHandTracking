@@ -23,14 +23,19 @@ struct ToolInteractionTargetComponent: Component {
     /// The collision mask for detecting collisions
     let collisionMask: CollisionGroup
     
+    /// Completion handler called when interaction occurs
+    var onInteraction: (() -> Void)?
+    
     init(targetStage: Int, 
          interactionData: [String: Any]? = nil,
          collisionGroup: CollisionGroup = .default,
-         collisionMask: CollisionGroup = .default) {
+         collisionMask: CollisionGroup = .default,
+         onInteraction: (() -> Void)? = nil) {
         self.targetStage = targetStage
         self.interactionData = interactionData
         self.collisionGroup = collisionGroup
         self.collisionMask = collisionMask
+        self.onInteraction = onInteraction
     }
     
     /// Check if this target matches the current stage of a tool
@@ -106,7 +111,8 @@ extension Entity {
     func setupToolInteractionTarget(stage: Int, 
                                   interactionData: [String: Any]? = nil,
                                   collisionGroup: CollisionGroup = .interactionTarget,
-                                  collisionMask: CollisionGroup = .tool) {
+                                  collisionMask: CollisionGroup = .tool,
+                                  onInteraction: (() -> Void)? = nil) {
         // Remove existing collision components
         components.remove(PhysicsBodyComponent.self)
         components.remove(CollisionSubscriptionComponent.self)
@@ -116,7 +122,8 @@ extension Entity {
             targetStage: stage,
             interactionData: interactionData,
             collisionGroup: collisionGroup,
-            collisionMask: collisionMask
+            collisionMask: collisionMask,
+            onInteraction: onInteraction
         )
         self.toolInteractionTarget = targetComponent
         
@@ -163,6 +170,9 @@ extension Entity {
             var updatedComponent = targetComponent
             updatedComponent.complete()
             self.toolInteractionTarget = updatedComponent
+            
+            // Call the completion handler
+            targetComponent.onInteraction?()
         }
     }
 }

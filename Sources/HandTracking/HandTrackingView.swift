@@ -66,14 +66,22 @@ public struct HandTrackingView: View {
                 mode: .static
             ))
             
-            // Add tool interaction target component
-            let targetComponent = ToolInteractionTargetComponent(
-                targetStage: 0,
+            // Setup interaction target with completion handler
+            entity.setupToolInteractionTarget(
+                stage: 0,
                 interactionData: ["index": index],
                 collisionGroup: .interactionTarget,
                 collisionMask: .tool
-            )
-            entity.toolInteractionTarget = targetComponent
+            ) {
+                // This closure will be called when the entity is interacted with
+                print("Interacted with entity at position: \(position)")
+                
+                // Example: Change the entity's color when interacted with
+                if var modelComponent = entity.components[ModelComponent.self] {
+                    modelComponent.materials = [SimpleMaterial(color: .green, isMetallic: false)]
+                    entity.components[ModelComponent.self] = modelComponent
+                }
+            }
             
             // Add to scene
             content.add(entity)

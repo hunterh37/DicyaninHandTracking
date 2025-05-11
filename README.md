@@ -1,6 +1,13 @@
 # HandTracking
 
-A Swift package for hand tracking and visualization in visionOS and iOS applications.
+A Swift package for hand tracking and visualization in visionOS and iOS applications. This package provides real-time hand tracking, visualization, and interaction capabilities for spatial computing applications.
+
+## Quick Start
+
+1. Add the package to your project
+2. Add the required Info.plist key
+3. Use the `HandTrackingView` or implement hand tracking manually
+4. Create interactive entities that respond to hand-held tools
 
 ## Features
 
@@ -10,6 +17,7 @@ A Swift package for hand tracking and visualization in visionOS and iOS applicat
 - Customizable finger visualization
 - Collision detection support
 - Animation support for visual feedback
+- Built-in interaction system for hand-held tools
 
 ## Requirements
 
@@ -31,6 +39,8 @@ dependencies: [
 
 ## Usage
 
+### Basic Usage
+
 The package provides a ready-to-use SwiftUI view for hand tracking:
 
 ```swift
@@ -45,51 +55,43 @@ struct ContentView: View {
 }
 ```
 
-Or you can implement hand tracking manually:
+### Creating Interactive Entities
+
+To create an entity that can be interacted with using hand-held tools:
 
 ```swift
-import HandTracking
-import RealityKit
-import SwiftUI
-
-struct ImmersiveView: View {
-    @StateObject private var handTracking = HandTracking()
-    
-    var body: some View {
-        RealityView { content in
-            // Register required components
-            HandTracking.registerComponents()
-            
-            // Add hand tracking entities to the scene
-            content.add(handTracking.controlRootEntity)
-            
-            // Start hand tracking
-            Task {
-                await handTracking.start()
-            }
-        }
-        .onDisappear {
-            // Clean up hand tracking when view disappears
-            handTracking.stop()
-        }
-    }
+// Create a trigger entity at a specific position
+let trigger = HandTracking.configureTriggerEntity(
+    at: SIMD3<Float>(0.3, 0, 0),
+    interactionData: ["type": "trigger"]
+) {
+    // This closure is called when the entity is interacted with
+    print("Trigger activated!")
 }
 
-### HandTrackingView
+// You can also load a custom 3D model for the trigger
+if let modelEntity = try? ModelEntity.load(named: "trigger_model") {
+    modelEntity.position = SIMD3<Float>(0.3, 0, 0)
+    modelEntity.setupToolInteractionTarget(
+        stage: 0,
+        interactionData: ["type": "custom_trigger"]
+    ) {
+        print("Custom trigger activated!")
+    }
+    rootEntity.addChild(modelEntity)
+}
+```
 
-A SwiftUI view that implements hand tracking functionality.
+### Loading Tools
 
-#### Properties
+To load a tool model that can interact with entities:
 
-- `showHandVisualizations`: Whether to show hand visualization entities (default: true)
-
-Example usage:
 ```swift
-// Basic usage with hand visualizations
-HandTrackingView()
-
-// Without hand visualizations
-HandTrackingView(showHandVisualizations: false)
+handTracking.loadModelForRightHand(modelName: "tool") { entity in
+    if let entity = entity {
+        print("Tool loaded successfully")
+    }
+}
 ```
 
 ### Required Setup
