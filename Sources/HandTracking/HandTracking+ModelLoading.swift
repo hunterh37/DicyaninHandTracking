@@ -9,16 +9,8 @@ public extension HandTracking {
     func loadModelForRightHand(modelName: String, completion: ((Entity?) -> Void)? = nil) {
         Task { @MainActor in
             do {
-                // Try to load the model from the main bundle first
+                // Try to load the model from the main bundle
                 if let entity = try? ModelEntity.load(named: modelName),
-                   let modelEntity = entity as? ModelEntity {
-                    attachModelToRightHand(modelEntity)
-                    completion?(modelEntity)
-                    return
-                }
-                
-                // If not found in main bundle, try to load from the package bundle
-                if let entity = try? ModelEntity.load(named: modelName, in: Bundle.module),
                    let modelEntity = entity as? ModelEntity {
                     attachModelToRightHand(modelEntity)
                     completion?(modelEntity)
