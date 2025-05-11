@@ -1,6 +1,6 @@
 # HandTracking
 
-A Swift package for hand tracking and visualization in visionOS and iOS applications. This package provides real-time hand tracking, visualization, and interaction capabilities for spatial computing applications.
+A Swift package for hand tracking and visualization in visionOS applications. This package provides real-time hand tracking, visualization, and interaction capabilities for spatial computing applications.
 
 ## Quick Start
 
@@ -21,7 +21,7 @@ A Swift package for hand tracking and visualization in visionOS and iOS applicat
 
 ## Requirements
 
-- iOS 17.0+ / visionOS 1.0+
+- visionOS 1.0+
 - Xcode 15.0+
 - Swift 5.9+
 
@@ -82,18 +82,6 @@ if let modelEntity = try? ModelEntity.load(named: "trigger_model") {
 }
 ```
 
-### Loading Tools
-
-To load a tool model that can interact with entities:
-
-```swift
-handTracking.loadModelForRightHand(modelName: "tool") { entity in
-    if let entity = entity {
-        print("Tool loaded successfully")
-    }
-}
-```
-
 ### Required Setup
 
 1. Add the following key to your Info.plist file to request hand tracking permissions:
@@ -150,12 +138,10 @@ The package includes a built-in interaction system for hand-held tools:
 Example usage:
 ```swift
 // Create an interaction target
-let targetEntity = ModelEntity(mesh: .generateBox(size: 0.1))
+let targetEntity = ModelEntity(mesh: .generateSphere(radius: 0.05))
 targetEntity.setupToolInteractionTarget(
     stage: 0,
-    interactionData: ["action": "activate"],
-    collisionGroup: .interactionTarget,
-    collisionMask: .tool
+    interactionData: ["action": "activate"]
 )
 
 // Load a tool model that will interact with targets
