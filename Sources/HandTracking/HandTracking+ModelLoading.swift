@@ -10,14 +10,16 @@ public extension HandTracking {
         Task { @MainActor in
             do {
                 // Try to load the model from the main bundle first
-                if let modelEntity = try? ModelEntity.load(named: modelName) {
+                if let entity = try? ModelEntity.load(named: modelName),
+                   let modelEntity = entity as? ModelEntity {
                     attachModelToRightHand(modelEntity)
                     completion?(modelEntity)
                     return
                 }
                 
                 // If not found in main bundle, try to load from the package bundle
-                if let modelEntity = try? ModelEntity.load(named: modelName, in: Bundle.module) {
+                if let entity = try? ModelEntity.load(named: modelName, in: Bundle.module),
+                   let modelEntity = entity as? ModelEntity {
                     attachModelToRightHand(modelEntity)
                     completion?(modelEntity)
                     return
@@ -36,9 +38,14 @@ public extension HandTracking {
     func loadModelForRightHand(from url: URL, completion: ((Entity?) -> Void)? = nil) {
         Task { @MainActor in
             do {
-                let modelEntity = try ModelEntity.load(contentsOf: url)
-                attachModelToRightHand(modelEntity)
-                completion?(modelEntity)
+                let entity = try ModelEntity.load(contentsOf: url)
+                if let modelEntity = entity as? ModelEntity {
+                    attachModelToRightHand(modelEntity)
+                    completion?(modelEntity)
+                } else {
+                    print("Failed to load model as ModelEntity from URL")
+                    completion?(nil)
+                }
             } catch {
                 print("Failed to load model from URL: \(error)")
                 completion?(nil)
