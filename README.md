@@ -31,6 +31,22 @@ dependencies: [
 
 ## Usage
 
+The package provides a ready-to-use SwiftUI view for hand tracking:
+
+```swift
+import SwiftUI
+import RealityKit
+import HandTracking
+
+struct ContentView: View {
+    var body: some View {
+        HandTrackingView()
+    }
+}
+```
+
+Or you can implement hand tracking manually:
+
 ```swift
 import HandTracking
 import RealityKit
@@ -59,32 +75,22 @@ struct ImmersiveView: View {
     }
 }
 
-// Example of loading a 3D model for the right hand
-struct ModelLoadingExample: View {
-    @StateObject private var handTracking = HandTracking()
-    
-    var body: some View {
-        RealityView { content in
-            // Register and setup hand tracking
-            HandTracking.registerComponents()
-            content.add(handTracking.controlRootEntity)
-            
-            Task {
-                await handTracking.start()
-                
-                // Load a model for the right hand
-                handTracking.loadModelForRightHand(modelName: "sword") { entity in
-                    if let entity = entity {
-                        print("Model loaded successfully")
-                    }
-                }
-            }
-        }
-        .onDisappear {
-            handTracking.stop()
-        }
-    }
-}
+### HandTrackingView
+
+A SwiftUI view that implements hand tracking functionality.
+
+#### Properties
+
+- `showHandVisualizations`: Whether to show hand visualization entities (default: true)
+
+Example usage:
+```swift
+// Basic usage with hand visualizations
+HandTrackingView()
+
+// Without hand visualizations
+HandTrackingView(showHandVisualizations: false)
+```
 
 ### Required Setup
 
