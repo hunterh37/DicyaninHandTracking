@@ -9,15 +9,17 @@ public extension HandTracking {
     func loadModelForRightHand(modelName: String, completion: ((Entity?) -> Void)? = nil) {
         Task { @MainActor in
             do {
+                print("📦 Attempting to load model: \(modelName)")
+                
                 // Try to load the model from the main bundle
-                if let entity = try? ModelEntity.load(named: modelName),
-                   let modelEntity = entity as? ModelEntity {
-                    attachModelToRightHand(modelEntity)
-                    completion?(modelEntity)
+                if let entity = try? Entity.load(named: modelName) {
+                    print("✅ Successfully loaded model: \(modelName)")
+                    attachModelToRightHand(entity)
+                    completion?(entity)
                     return
                 }
                 
-                print("Failed to load model: \(modelName)")
+                print("❌ Failed to load model: \(modelName)")
                 completion?(nil)
             }
         }
