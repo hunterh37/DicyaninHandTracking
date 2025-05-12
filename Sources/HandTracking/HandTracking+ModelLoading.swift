@@ -75,6 +75,8 @@ public extension HandTracking {
             // Add collision component
             entity.components.set(CollisionComponent(shapes: [.generateBox(size: entity.visualBounds(relativeTo: nil).extents)], mode: .trigger))
             
+            entity.components.set(InputTargetComponent())
+            
             // Add tool collision trigger component
             let trigger = ToolCollisionTriggerComponent(
                 totalStages: 1,

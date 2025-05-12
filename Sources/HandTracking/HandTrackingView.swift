@@ -27,7 +27,6 @@ public struct HandTrackingView: View {
                     print("📸 Camera model loaded successfully")
                 }
             }
-            
             // Add example interactive entities
             addExampleEntities(to: content)
             
@@ -36,10 +35,28 @@ public struct HandTrackingView: View {
                 await handTracking.start(showHandVisualizations: showHandVisualizations)
             }
         }
+#if targetEnvironment(simulator)
+        .gesture(dragGesture)
+#endif
         .onDisappear {
             // Clean up hand tracking when view disappears
             handTracking.stop()
         }
+    }
+    
+    // Allow drag gesture in simulator on tool objects for ease of debugging
+    var dragGesture: some Gesture {
+        DragGesture()
+            .targetedToAnyEntity()
+            .onChanged { value in // When drag begins/changes, set Rigidbody to kinematic
+                guard let parent = value.entity.parent else { return }
+                value.entity.position = value.convert(value.location3D, from: .local, to: parent)
+                value.entity.components[PhysicsBodyComponent.self]?.mode = .kinematic
+            }
+            .onEnded({ value in // When drag ends, set Rigidbody back to dynamic
+                value.entity.components[PhysicsBodyComponent.self]?.mode = .dynamic
+                
+            })
     }
     
     private func addExampleEntities(to content: RealityViewContent) {
@@ -75,19 +92,22 @@ public struct HandTrackingView: View {
                 mode: .static
             ))
             
-            // Setup interaction target with completion handler
-            entity.setupToolInteractionTarget(
-                stage: 0,
-                interactionData: ["index": index],
-                collisionGroup: .interactionTarget,
-                collisionMask: .tool
-            ) {
-                print("🎯 Interacted with entity at position: \(position)")
-                
-                // Example: Change the entity's color when interacted with
-                if var modelComponent = entity.components[ModelComponent.self] {
-                    modelComponent.materials = [SimpleMaterial(color: .green, isMetallic: false)]
-                    entity.components[ModelComponent.self] = modelComponent
+            Task {
+                await try? Task.sleep(for: .seconds(1))
+                // Setup interaction target with completion handler
+                entity.setupToolInteractionTarget(
+                    stage: 0,
+                    interactionData: ["index": index],
+                    collisionGroup: .interactionTarget,
+                    collisionMask: .tool
+                ) {
+                    print("🎯 Interacted with entity at position: \(position)")
+                    
+                    // Example: Change the entity's color when interacted with
+                    if var modelComponent = entity.components[ModelComponent.self] {
+                        modelComponent.materials = [SimpleMaterial(color: .green, isMetallic: false)]
+                        entity.components[ModelComponent.self] = modelComponent
+                    }
                 }
             }
             

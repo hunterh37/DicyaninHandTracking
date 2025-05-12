@@ -40,9 +40,8 @@ struct ToolInteractionTargetComponent: Component {
     }
     
     /// Check if this target matches the current stage of a tool
-    func matchesCurrentStage(of tool: ModelEntity) -> Bool {
-        guard let trigger = tool.toolCollisionTrigger,
-              trigger.currentStage == targetStage,
+    func matchesCurrentStage(of trigger: ToolCollisionTriggerComponent) -> Bool {
+        guard trigger.currentStage == targetStage,
               !isCompleted else {
             return false
         }
@@ -76,9 +75,9 @@ struct ToolCollisionTriggerComponent: Component {
     
     /// Progress to the next stage
     mutating func progressToNextStage() -> Bool {
-        guard currentStage < totalStages - 1 else {
+        if currentStage >= totalStages - 1 {
             isCompleted = true
-            return false
+            return true  // Return true for the final stage
         }
         currentStage += 1
         return true
@@ -165,19 +164,20 @@ extension Entity {
         print("💥 Collision detected between: \(event.entityA.name) and \(event.entityB.name)")
         
         guard let targetComponent = self.toolInteractionTarget,
-              let toolEntity = event.entityA as? ModelEntity ?? event.entityB as? ModelEntity,
-              targetComponent.matchesCurrentStage(of: toolEntity) else {
-            print("❌ Collision ignored - invalid target or tool")
+              let toolTrigger = event.entityA.toolCollisionTrigger ?? event.entityB.toolCollisionTrigger,
+              targetComponent.matchesCurrentStage(of: toolTrigger) else {
             return
         }
         
         print("✅ Valid collision detected")
         
+        var trigger = toolTrigger
         // Trigger the interaction
-        if var trigger = toolEntity.toolCollisionTrigger,
-           trigger.progressToNextStage() {
+        if trigger.progressToNextStage() {
             // Update the tool's trigger
-            toolEntity.toolCollisionTrigger = trigger
+            if let toolEntity = event.entityA as? ModelEntity ?? event.entityB as? ModelEntity {
+                toolEntity.toolCollisionTrigger = trigger
+            }
             
             // Mark this target as completed
             var updatedComponent = targetComponent
