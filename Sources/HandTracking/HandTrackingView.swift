@@ -38,11 +38,11 @@ public struct HandTrackingView: View {
     private func addExampleEntities(to content: RealityViewContent) {
         // Create a few example entities with different positions
         let positions: [SIMD3<Float>] = [
-            SIMD3<Float>(0.3, 0, 0),    // Right
-            SIMD3<Float>(-0.3, 0, 0),   // Left
-            SIMD3<Float>(0, 0.3, 0),    // Up
-            SIMD3<Float>(0, -0.3, 0),   // Down
-            SIMD3<Float>(0, 0, 0.3)     // Forward
+            SIMD3<Float>(0.5, 0.5, 0.5),    // Right, Up, Forward
+            SIMD3<Float>(-0.5, 0.5, 0.5),   // Left, Up, Forward
+            SIMD3<Float>(0, 0.7, 0.5),      // Center, Higher Up, Forward
+            SIMD3<Float>(0.5, 0.5, -0.5),   // Right, Up, Back
+            SIMD3<Float>(-0.5, 0.5, -0.5)   // Left, Up, Back
         ]
         
         let boxSize = SIMD3<Float>(0.1, 0.1, 0.1)
@@ -52,14 +52,16 @@ public struct HandTrackingView: View {
             let entity = ModelEntity(mesh: .generateBox(size: boxSize))
             entity.position = position
             
-            // Add collision component
+            // Add to scene first
+            content.add(entity)
+            
+            // Now set up collision and interaction after entity is in scene
             entity.components.set(CollisionComponent(
                 shapes: [.generateBox(size: boxSize)],
                 mode: .trigger,
                 filter: CollisionFilter(group: .interactionTarget, mask: .tool)
             ))
             
-            // Add physics body
             entity.components.set(PhysicsBodyComponent(
                 shapes: [.generateBox(size: boxSize)],
                 mass: 0,
@@ -73,8 +75,7 @@ public struct HandTrackingView: View {
                 collisionGroup: .interactionTarget,
                 collisionMask: .tool
             ) {
-                // This closure will be called when the entity is interacted with
-                print("Interacted with entity at position: \(position)")
+                print("🎯 Interacted with entity at position: \(position)")
                 
                 // Example: Change the entity's color when interacted with
                 if var modelComponent = entity.components[ModelComponent.self] {
@@ -83,8 +84,7 @@ public struct HandTrackingView: View {
                 }
             }
             
-            // Add to scene
-            content.add(entity)
+            print("📦 Added entity at position: \(position)")
         }
     }
 }
