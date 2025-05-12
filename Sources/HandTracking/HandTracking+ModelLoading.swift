@@ -12,10 +12,11 @@ public extension HandTracking {
                 print("📦 Attempting to load model: \(modelName)")
                 
                 // Try to load the model from the main bundle
-                if let entity = try? Entity.load(named: modelName) {
+                if let entity = try? Entity.load(named: modelName),
+                   let modelEntity = entity as? ModelEntity {
                     print("✅ Successfully loaded model: \(modelName)")
-                    attachModelToRightHand(entity)
-                    completion?(entity)
+                    attachModelToRightHand(modelEntity)
+                    completion?(modelEntity)
                     return
                 }
                 
@@ -61,26 +62,26 @@ public extension HandTracking {
     
     // MARK: - Private Methods
     
-    private func attachModelToRightHand(_ modelEntity: ModelEntity) {
+    private func attachModelToRightHand(_ entity: Entity) {
         Task { @MainActor in
             // Remove any existing model
             removeModelFromRightHand()
             
             // Add the new model
-            rightHandEntity.addChild(modelEntity)
+            rightHandEntity.addChild(entity)
             
             // Center the model on the hand
-            modelEntity.position = .zero
+            entity.position = .zero
             
             // Add collision component
-            modelEntity.components.set(CollisionComponent(shapes: [.generateBox(size: modelEntity.visualBounds(relativeTo: nil).extents)], mode: .trigger))
+            entity.components.set(CollisionComponent(shapes: [.generateBox(size: entity.visualBounds(relativeTo: nil).extents)], mode: .trigger))
             
             // Add tool collision trigger component
             let trigger = ToolCollisionTriggerComponent(
                 totalStages: 1,
                 stageDescriptions: ["Ready for interaction"]
             )
-            modelEntity.toolCollisionTrigger = trigger
+            entity.toolCollisionTrigger = trigger
         }
     }
 } 
