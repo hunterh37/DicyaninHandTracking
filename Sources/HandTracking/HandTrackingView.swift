@@ -21,6 +21,13 @@ public struct HandTrackingView: View {
             // Add hand tracking entities to the scene
             content.add(handTracking.controlRootEntity)
             
+            // Load camera model for right hand
+            Task {
+                if let cameraEntity = try? await HandTracking.loadModel(named: "Camera", for: .right) {
+                    content.add(cameraEntity)
+                }
+            }
+            
             // Add example interactive entities
             addExampleEntities(to: content)
             
