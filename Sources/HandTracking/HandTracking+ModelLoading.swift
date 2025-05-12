@@ -12,11 +12,10 @@ public extension HandTracking {
                 print("📦 Attempting to load model: \(modelName)")
                 
                 // Try to load the model from the main bundle
-                if let entity = try? Entity.load(named: modelName),
-                   let modelEntity = entity as? ModelEntity {
+                if let entity = try? Entity.load(named: modelName) {
                     print("✅ Successfully loaded model: \(modelName)")
-                    attachModelToRightHand(modelEntity)
-                    completion?(modelEntity)
+                    attachModelToRightHand(entity)
+                    completion?(entity)
                     return
                 }
                 
