@@ -115,6 +115,8 @@ extension Entity {
                                   collisionMask: CollisionGroup = .tool,
                                   onInteraction: (() -> Void)? = nil) {
         
+        print("🔧 Setting up tool interaction target")
+        
         components.remove(PhysicsBodyComponent.self)
         components.remove(CollisionSubscriptionComponent.self)
         
@@ -149,19 +151,27 @@ extension Entity {
         
         // Set up collision subscription when added to scene
         if let scene = self.scene {
+            print("📡 Setting up collision subscription")
             let subscription = scene.subscribe(to: CollisionEvents.Began.self) { [weak self] event in
                 self?.handleCollision(event)
             }
             self.collisionSubscription = CollisionSubscriptionComponent(subscription: subscription)
+        } else {
+            print("⚠️ No scene available for collision subscription")
         }
     }
     
     private func handleCollision(_ event: CollisionEvents.Began) {
+        print("💥 Collision detected between: \(event.entityA.name) and \(event.entityB.name)")
+        
         guard let targetComponent = self.toolInteractionTarget,
               let toolEntity = event.entityA as? ModelEntity ?? event.entityB as? ModelEntity,
               targetComponent.matchesCurrentStage(of: toolEntity) else {
+            print("❌ Collision ignored - invalid target or tool")
             return
         }
+        
+        print("✅ Valid collision detected")
         
         // Trigger the interaction
         if var trigger = toolEntity.toolCollisionTrigger,
@@ -176,6 +186,7 @@ extension Entity {
             
             // Call the completion handler
             targetComponent.onInteraction?()
+            print("🎯 Interaction completed")
         }
     }
 }
