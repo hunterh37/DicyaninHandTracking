@@ -29,20 +29,15 @@ public class ToolManager: ObservableObject {
     // Callback for when tool changes
     public var onToolChanged: ((Tool) -> Void)?
     
-    private init() {
-        // Initialize with default tools
-        setupDefaultTools()
-    }
+    private init() {}
     
-    /// Sets up the default set of tools
-    private func setupDefaultTools() {
-        availableTools = [
-            Tool(id: "camera", name: "Camera", modelName: "Camera"),
-            Tool(id: "flower", name: "Flower", modelName: "Flower")
-        ]
+    /// Configures the available tools
+    /// - Parameter tools: Array of tools to make available
+    public func configureTools(_ tools: [Tool]) {
+        availableTools = tools
         
-        // Set the first tool as active by default
-        if let firstTool = availableTools.first {
+        // Set the first tool as active by default if no tool is currently active
+        if activeTool == nil, let firstTool = availableTools.first {
             setActiveTool(firstTool)
         }
     }

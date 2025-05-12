@@ -7,17 +7,35 @@ public struct HandTrackingView: View {
     @StateObject private var handTracking = HandTracking()
     @StateObject private var toolManager = ToolManager.shared
     private let showHandVisualizations: Bool
+    private let tools: [Tool]
     
-    /// Creates a new HandTrackingView
+    /// Creates a new HandTrackingView with default tools
     /// - Parameter showHandVisualizations: Whether to show hand visualization entities (default: true)
     public init(showHandVisualizations: Bool = true) {
         self.showHandVisualizations = showHandVisualizations
+        
+        self.tools = [
+            Tool(id: "camera", name: "Camera", modelName: "Camera"),
+            Tool(id: "flower", name: "Flower", modelName: "Flower")
+        ]
+    }
+    
+    /// Creates a new HandTrackingView with custom tools
+    /// - Parameters:
+    ///   - tools: Array of tools to use
+    ///   - showHandVisualizations: Whether to show hand visualization entities (default: true)
+    public init(tools: [Tool], showHandVisualizations: Bool = true) {
+        self.showHandVisualizations = showHandVisualizations
+        self.tools = tools
     }
     
     public var body: some View {
         RealityView { content in
             // Register required components
             HandTracking.registerComponents()
+            
+            // Configure tools
+            toolManager.configureTools(tools)
             
             // Add hand tracking entities to the scene
             content.add(handTracking.controlRootEntity)

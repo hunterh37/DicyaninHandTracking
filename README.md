@@ -20,6 +20,7 @@ A Swift package for hand tracking and visualization in visionOS applications. Th
 - Collision detection support
 - Animation support for visual feedback
 - Built-in interaction system for hand-held tools
+- Tool management system for switching between different hand-held tools
 
 ## Requirements
 
@@ -55,6 +56,78 @@ struct ContentView: View {
         HandTrackingView()
     }
 }
+```
+
+### Tool Management
+
+The package includes a tool management system that allows you to switch between different hand-held tools. You can use it in two ways:
+
+#### 1. Using Default Tools
+
+The simplest way is to use the default tools (Camera and Flower):
+
+```swift
+HandTrackingView()
+```
+
+#### 2. Using Custom Tools
+
+You can define your own set of tools:
+
+```swift
+let customTools = [
+    Tool(id: "camera", name: "Camera", modelName: "Camera"),
+    Tool(id: "flower", name: "Flower", modelName: "Flower"),
+    Tool(id: "custom", name: "Custom Tool", modelName: "CustomTool")
+]
+
+HandTrackingView(tools: customTools)
+```
+
+#### Tool Configuration
+
+Each tool is defined using the `Tool` struct:
+
+```swift
+Tool(
+    id: "unique_id",           // Unique identifier for the tool
+    name: "Display Name",      // Name shown in the tool picker
+    modelName: "ModelName",    // Name of the .usdz file (without extension)
+    stages: 1,                 // Number of interaction stages (default: 1)
+    stageDescriptions: ["Ready"] // Descriptions for each stage (default: ["Ready"])
+)
+```
+
+#### Tool Switching
+
+The package provides a `ToolView` that can be presented to allow users to switch between tools:
+
+```swift
+// In your app's window group
+WindowGroup {
+    ContentView()
+}
+.windowStyle(.plain)
+.windowResizability(.contentSize)
+
+Window("Select Tool", id: "tool-view") {
+    ToolView()
+}
+.windowStyle(.plain)
+.windowResizability(.contentSize)
+```
+
+You can also programmatically switch tools:
+
+```swift
+// Switch to a specific tool
+ToolManager.shared.setActiveTool(id: "camera")
+
+// Add a new tool
+ToolManager.shared.addTool(Tool(id: "new", name: "New Tool", modelName: "NewTool"))
+
+// Remove a tool
+ToolManager.shared.removeTool(id: "camera")
 ```
 
 ### Creating Interactive Entities
@@ -126,6 +199,24 @@ await handTracking.start(showHandVisualizations: false)
 - `loadModelForRightHand(modelName:completion:)`: Load a 3D model by name and attach it to the right hand
 - `loadModelForRightHand(from:completion:)`: Load a 3D model from a URL and attach it to the right hand
 - `removeModelFromRightHand()`: Remove any currently attached model from the right hand
+
+### ToolManager
+
+Manages available tools and the currently active tool.
+
+#### Properties
+
+- `availableTools`: Array of available tools
+- `activeTool`: Currently active tool
+- `onToolChanged`: Callback when the active tool changes
+
+#### Methods
+
+- `configureTools(_:)`: Configure the available tools
+- `setActiveTool(_:)`: Set the active tool
+- `setActiveTool(id:)`: Set the active tool by ID
+- `addTool(_:)`: Add a new tool
+- `removeTool(id:)`: Remove a tool
 
 ### Interaction System
 
