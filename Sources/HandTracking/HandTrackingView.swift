@@ -22,9 +22,9 @@ public struct HandTrackingView: View {
             content.add(handTracking.controlRootEntity)
             
             // Load camera model for right hand
-            Task {
-                if let cameraEntity = try? await HandTracking.loadModel(named: "Camera", for: .right) {
-                    content.add(cameraEntity)
+            handTracking.loadModelForRightHand(modelName: "Camera") { entity in
+                if let entity = entity {
+                    print("📸 Camera model loaded successfully")
                 }
             }
             
