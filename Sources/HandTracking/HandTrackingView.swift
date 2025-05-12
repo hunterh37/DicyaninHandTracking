@@ -75,11 +75,10 @@ public struct HandTrackingView: View {
             handTracking.stop()
         }
 #if targetEnvironment(simulator)
+        // Allow drag gesture in simulator on tool objects for ease of debugging
         .gesture(dragGesture)
 #endif
     }
-    
-    // Allow drag gesture in simulator on tool objects for ease of debugging
     var dragGesture: some Gesture {
         DragGesture()
             .targetedToAnyEntity()

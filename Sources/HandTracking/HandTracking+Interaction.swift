@@ -163,6 +163,11 @@ extension Entity {
     private func handleCollision(_ event: CollisionEvents.Began) {
         print("💥 Collision detected between: \(event.entityA.name) and \(event.entityB.name)")
         
+        // Check if this entity is involved in the collision
+        guard event.entityA == self || event.entityB == self else {
+            return
+        }
+        
         guard let targetComponent = self.toolInteractionTarget,
               let toolTrigger = event.entityA.toolCollisionTrigger ?? event.entityB.toolCollisionTrigger,
               targetComponent.matchesCurrentStage(of: toolTrigger) else {
