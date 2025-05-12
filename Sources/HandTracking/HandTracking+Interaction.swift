@@ -4,6 +4,7 @@ import Combine
 /// A component that stores the collision subscription
 struct CollisionSubscriptionComponent: Component {
     var subscription: Cancellable?
+    var sceneSubscription: Cancellable?
 }
 
 /// A component that defines an object that can trigger interactions with hand-held tools
@@ -146,20 +147,13 @@ extension Entity {
         )
         components.set(physicsBody)
         
-        // Subscribe to scene changes to set up collision subscription when added to scene
-        self.scene?.publisher(for: SceneEvents.Update.self)
-            .sink { [weak self] _ in
-                guard let self = self,
-                      self.collisionSubscription == nil,
-                      let scene = self.scene else { return }
-                
-                // Set up collision subscription
-                let subscription = scene.subscribe(to: CollisionEvents.Began.self) { [weak self] event in
-                    self?.handleCollision(event)
-                }
-                self.collisionSubscription = CollisionSubscriptionComponent(subscription: subscription)
+        // Set up collision subscription when added to scene
+        if let scene = self.scene {
+            let subscription = scene.subscribe(to: CollisionEvents.Began.self) { [weak self] event in
+                self?.handleCollision(event)
             }
-            .store(in: &subscriptionCancellables)
+            self.collisionSubscription = CollisionSubscriptionComponent(subscription: subscription)
+        }
     }
     
     private var subscriptionCancellables = Set<AnyCancellable>()
