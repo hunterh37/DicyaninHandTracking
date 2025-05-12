@@ -63,7 +63,7 @@ To create an entity that can be interacted with using hand-held tools:
 
 ```swift
 // Create a trigger entity at a specific position
-let trigger = HandTracking.configureTriggerEntity(
+let trigger = handTracking.configureTriggerEntity(
     at: SIMD3<Float>(0.3, 0, 0),
     interactionData: ["type": "trigger"]
 ) {
@@ -80,7 +80,7 @@ if let modelEntity = try? ModelEntity.load(named: "trigger_model") {
     ) {
         print("Custom trigger activated!")
     }
-    rootEntity.addChild(modelEntity)
+    handTracking.controlRootEntity.addChild(modelEntity)
 }
 ```
 

@@ -223,7 +223,7 @@ public class HandTracking: HandTrackingProtocol {
     ///   - interactionData: Additional data for the interaction (default: nil)
     ///   - onInteraction: Closure called when the entity is interacted with
     /// - Returns: The configured ModelEntity
-    public static func configureTriggerEntity(
+    public func configureTriggerEntity(
         at position: SIMD3<Float>,
         stage: Int = 0,
         interactionData: [String: Any]? = nil,
@@ -242,7 +242,7 @@ public class HandTracking: HandTrackingProtocol {
             onInteraction: onInteraction
         )
         
-        // Add to controlRootEntity instead of rootEntity
+        // Add to controlRootEntity
         controlRootEntity.addChild(entity)
         
         return entity
