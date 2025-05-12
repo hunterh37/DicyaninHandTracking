@@ -9,6 +9,8 @@ A Swift package for hand tracking and visualization in visionOS applications. Th
 3. Use the `HandTrackingView` or implement hand tracking manually
 4. Create interactive entities that respond to hand-held tools
 
+> **Note:** See `HandTrackingView.swift` for a complete RealityView implementation example with hand tracking and interactive entities.
+
 ## Features
 
 - Real-time hand tracking using ARKit

@@ -71,8 +71,8 @@ public class HandTracking: HandTrackingProtocol {
             rightHandEntity.components.set(CollisionComponent(shapes: [.generateSphere(radius: 0.2)], mode: .trigger))
             rightHandEntity.components.set(PhysicsBodyComponent(shapes: [.generateSphere(radius: 0.2)], mass: 10, mode: .kinematic))
             
-            rootEntity.addChild(rightHandEntity)
-            rootEntity.addChild(leftHandEntity)
+            controlRootEntity.addChild(rightHandEntity)
+            controlRootEntity.addChild(leftHandEntity)
             
             if showHandVisualizations {
                 initializeVisualizationFingerTips()
@@ -242,8 +242,8 @@ public class HandTracking: HandTrackingProtocol {
             onInteraction: onInteraction
         )
         
-        // Add to root entity
-        rootEntity.addChild(entity)
+        // Add to controlRootEntity instead of rootEntity
+        controlRootEntity.addChild(entity)
         
         return entity
     }
