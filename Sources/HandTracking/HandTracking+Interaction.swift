@@ -156,8 +156,6 @@ extension Entity {
         }
     }
     
-    private var subscriptionCancellables = Set<AnyCancellable>()
-    
     private func handleCollision(_ event: CollisionEvents.Began) {
         guard let targetComponent = self.toolInteractionTarget,
               let toolEntity = event.entityA as? ModelEntity ?? event.entityB as? ModelEntity,
