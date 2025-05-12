@@ -31,6 +31,7 @@ public class HandTracking: HandTrackingProtocol {
     // MARK: - Properties
     private var session = ARKitSession()
     private var handTracking = HandTrackingProvider()
+    var currentToolEntity: Entity?
     
     @Published public var latestHandTracking: HandAnchorUpdate = .init(left: nil, right: nil)
     @Published public var isRightHanded = true
@@ -115,6 +116,17 @@ public class HandTracking: HandTrackingProtocol {
         // Set right hand fingers
         for (_, entity) in rightFingerVisualizationEntities {
             entity.setIsActiveVisual(isActive, removeAfter: duration, addCollision: addCollision)
+        }
+    }
+    
+    /// Removes any currently attached model from the right hand
+    func removeModelFromRightHand() {
+        Task { @MainActor in
+            // Remove the current tool entity if it exists
+            if let currentTool = currentToolEntity {
+                currentTool.removeFromParent()
+                currentToolEntity = nil
+            }
         }
     }
     

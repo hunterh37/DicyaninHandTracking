@@ -47,24 +47,15 @@ public extension HandTracking {
         }
     }
     
-    /// Removes any currently attached model from the right hand
-    func removeModelFromRightHand() {
-        Task { @MainActor in
-            // Remove all child entities that are ModelEntity instances
-            rightHandEntity.children.forEach { child in
-                if child is ModelEntity {
-                    child.removeFromParent()
-                }
-            }
-        }
-    }
-    
     // MARK: - Private Methods
     
     private func attachModelToRightHand(_ entity: Entity) {
         Task { @MainActor in
             // Remove any existing model
-            removeModelFromRightHand()
+//            removeModelFromRightHand()
+ 
+            // Store reference to new entity
+            currentToolEntity = entity
             
             // Add the new model
             rightHandEntity.addChild(entity)

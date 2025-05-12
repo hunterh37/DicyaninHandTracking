@@ -5,6 +5,7 @@ import HandTracking
 /// A SwiftUI view that implements hand tracking functionality
 public struct HandTrackingView: View {
     @StateObject private var handTracking = HandTracking()
+    @StateObject private var toolManager = ToolManager.shared
     private let showHandVisualizations: Bool
     
     /// Creates a new HandTrackingView
@@ -21,12 +22,28 @@ public struct HandTrackingView: View {
             // Add hand tracking entities to the scene
             content.add(handTracking.controlRootEntity)
             
-            // Load camera model for right hand
-            handTracking.loadModelForRightHand(modelName: "Camera") { entity in
-                if let entity = entity {
-                    print("📸 Camera model loaded successfully")
+            // Set up tool change handler
+            toolManager.onToolChanged = { tool in
+                // Remove any existing model
+                handTracking.removeModelFromRightHand()
+                
+                // Load the new tool model
+                handTracking.loadModelForRightHand(modelName: tool.modelName) { entity in
+                    if let entity = entity {
+                        print("📸 \(tool.name) model loaded successfully")
+                    }
                 }
             }
+            
+            // Load initial tool model
+            if let activeTool = toolManager.activeTool {
+                handTracking.loadModelForRightHand(modelName: activeTool.modelName) { entity in
+                    if let entity = entity {
+                        print("📸 \(activeTool.name) model loaded successfully")
+                    }
+                }
+            }
+            
             // Add example interactive entities
             addExampleEntities(to: content)
             
@@ -35,13 +52,13 @@ public struct HandTrackingView: View {
                 await handTracking.start(showHandVisualizations: showHandVisualizations)
             }
         }
-#if targetEnvironment(simulator)
-        .gesture(dragGesture)
-#endif
         .onDisappear {
             // Clean up hand tracking when view disappears
             handTracking.stop()
         }
+#if targetEnvironment(simulator)
+        .gesture(dragGesture)
+#endif
     }
     
     // Allow drag gesture in simulator on tool objects for ease of debugging
