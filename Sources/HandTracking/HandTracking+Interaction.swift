@@ -113,7 +113,7 @@ extension Entity {
                                   collisionGroup: CollisionGroup = .interactionTarget,
                                   collisionMask: CollisionGroup = .tool,
                                   onInteraction: (() -> Void)? = nil) {
-        // Remove existing collision components
+        
         components.remove(PhysicsBodyComponent.self)
         components.remove(CollisionSubscriptionComponent.self)
         
@@ -146,12 +146,23 @@ extension Entity {
         )
         components.set(physicsBody)
         
-        // Subscribe to collision events and store the subscription
-        let subscription = self.scene?.subscribe(to: CollisionEvents.Began.self) { event in
-            self.handleCollision(event)
-        }
-        self.collisionSubscription = CollisionSubscriptionComponent(subscription: subscription)
+        // Subscribe to scene changes to set up collision subscription when added to scene
+        self.scene?.publisher(for: SceneEvents.Update.self)
+            .sink { [weak self] _ in
+                guard let self = self,
+                      self.collisionSubscription == nil,
+                      let scene = self.scene else { return }
+                
+                // Set up collision subscription
+                let subscription = scene.subscribe(to: CollisionEvents.Began.self) { [weak self] event in
+                    self?.handleCollision(event)
+                }
+                self.collisionSubscription = CollisionSubscriptionComponent(subscription: subscription)
+            }
+            .store(in: &subscriptionCancellables)
     }
+    
+    private var subscriptionCancellables = Set<AnyCancellable>()
     
     private func handleCollision(_ event: CollisionEvents.Began) {
         guard let targetComponent = self.toolInteractionTarget,
