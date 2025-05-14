@@ -1,10 +1,11 @@
 import SwiftUI
 import RealityKit
 import HandTracking
+import DicyaninARKitSession
 
 /// A SwiftUI view that implements hand tracking functionality
 public struct HandTrackingView: View {
-    @StateObject private var handTracking = HandTracking()
+    @StateObject private var handTracking = HandTracking.shared
     @StateObject private var toolManager = ToolManager.shared
     private let showHandVisualizations: Bool
     private let tools: [Tool]

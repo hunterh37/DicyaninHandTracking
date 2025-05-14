@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CollisionSubscriptionComponent.swift
 //  HandTracking
 //
 //  Created by Hunter Harris on 5/12/25.

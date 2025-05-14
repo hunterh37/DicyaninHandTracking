@@ -8,6 +8,8 @@
 import RealityKit
 import ARKit
 import SwiftUI
+import Combine
+import DicyaninARKitSession
 
 /// Protocol defining the interface for hand tracking functionality
 public protocol HandTrackingProtocol: ObservableObject {
@@ -26,11 +28,19 @@ var rootEntity = Entity()
 var rightHandEntity = Entity()
 var leftHandEntity = Entity()
 
-/// Main class implementing hand tracking functionality
+/// A class that manages hand tracking and gesture recognition
 public class HandTracking: HandTrackingProtocol {
+    /// Shared instance of the hand tracking manager
+    public static let shared = HandTracking()
+    
+    private var cancellables = Set<AnyCancellable>()
+    private var handTrackingCancellable: AnyCancellable?
+    
+    public init() {
+        setupHandTrackingSubscription()
+    }
+    
     // MARK: - Properties
-    private var session = ARKitSession()
-    private var handTracking = HandTrackingProvider()
     var currentToolEntity: Entity?
     
     @Published public var latestHandTracking: HandAnchorUpdate = .init(left: nil, right: nil)
@@ -60,11 +70,9 @@ public class HandTracking: HandTrackingProtocol {
         .thumbKnuckle, .thumbIntermediateBase, .thumbTip, .thumbIntermediateTip
     ]
     
-    // MARK: - Initialization
-    public init() {
-    }
-    
     // MARK: - Public Methods
+    /// Starts hand tracking
+    /// - Parameter showHandVisualizations: Whether to show hand visualization entities
     public func start(showHandVisualizations: Bool = true) async {
         Task { @MainActor in
             rightHandEntity.removeFromParent()
@@ -79,13 +87,17 @@ public class HandTracking: HandTrackingProtocol {
                 initializeVisualizationFingerTips()
             }
             
-            await initializeHandTracking()
+            do {
+                try await ARKitSessionManager.shared.start()
+            } catch {
+                print("Failed to start hand tracking: \(error)")
+            }
         }
     }
     
+    /// Stops hand tracking
     public func stop() {
-        session.stop()
-        removeAllHandEntities()
+        ARKitSessionManager.shared.stop()
     }
     
     public func highlightFinger(_ finger: HandSkeleton.JointName, hand: HandType, duration: TimeInterval? = nil, isActive: Bool = true) {
@@ -131,48 +143,40 @@ public class HandTracking: HandTrackingProtocol {
     }
     
     // MARK: - Private Methods
-    private func initializeHandTracking() async {
-        do {
-            guard HandTrackingProvider.isSupported else { return }
-            handTracking = HandTrackingProvider()
-            try await session.run([handTracking])
-            await publishHandTrackingUpdates()
-        } catch {
-            print("Failed to initialize hand tracking: \(error)")
-        }
-    }
-    
-    private func publishHandTrackingUpdates() async {
-        for await update in handTracking.anchorUpdates {
-            guard update.anchor.isTracked else { continue }
-            
-            if update.anchor.chirality == .left {
-                processLeftHandUpdate(anchor: update.anchor)
-            } else if update.anchor.chirality == .right {
-                processRightHandUpdate(anchor: update.anchor)
+    private func setupHandTrackingSubscription() {
+        handTrackingCancellable = ARKitSessionManager.shared.handTrackingUpdates
+            .sink { [weak self] update in
+                // Convert DicyaninARKitSession.HandAnchorUpdate to HandTracking.HandAnchorUpdate
+                let convertedUpdate = HandAnchorUpdate(
+                    left: update.left,
+                    right: update.right
+                )
+                self?.handleHandUpdate(convertedUpdate)
             }
+    }
+    
+    private func handleHandUpdate(_ update: HandAnchorUpdate) {
+        // Process hand updates as before
+        if let leftHand = update.left {
+            processHandAnchor(leftHand)
+        }
+        if let rightHand = update.right {
+            processHandAnchor(rightHand)
         }
     }
     
-    private func processLeftHandUpdate(anchor: HandAnchor) {
+    private func processHandAnchor(_ anchor: HandAnchor) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.latestHandTracking.left = anchor
-            self.updateLeftFingertipVisualizerEntities(anchor)
+            self.latestHandTracking = HandAnchorUpdate(left: anchor, right: nil)
+            self.updateFingertipVisualizerEntities(anchor)
             
             let newTransform = Transform(matrix: anchor.originFromAnchorTransform)
-            leftHandEntity.transform = newTransform
-        }
-    }
-    
-    private func processRightHandUpdate(anchor: HandAnchor) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.latestHandTracking.right = anchor
-            self.updateRightFingertipVisualizerEntities(anchor)
-            
-            let newTransform = Transform(matrix: anchor.originFromAnchorTransform)
-            rightHandEntity.transform = newTransform
+            if anchor.chirality == .left {
+                leftHandEntity.transform = newTransform
+            } else if anchor.chirality == .right {
+                rightHandEntity.transform = newTransform
+            }
         }
     }
     
@@ -197,7 +201,7 @@ public class HandTracking: HandTrackingProtocol {
         return FingerVisualizationEntity(mode: mode)
     }
     
-    private func updateLeftFingertipVisualizerEntities(_ anchor: HandAnchor) {
+    private func updateFingertipVisualizerEntities(_ anchor: HandAnchor) {
         guard let handSkeleton = anchor.handSkeleton else { return }
         
         for (jointName, entity) in leftFingerVisualizationEntities {
@@ -205,10 +209,6 @@ public class HandTracking: HandTrackingProtocol {
             let worldTransform = matrix_multiply(anchor.originFromAnchorTransform, joint.anchorFromJointTransform)
             entity.setTransformMatrix(worldTransform, relativeTo: nil)
         }
-    }
-    
-    private func updateRightFingertipVisualizerEntities(_ anchor: HandAnchor) {
-        guard let handSkeleton = anchor.handSkeleton else { return }
         
         for (jointName, entity) in rightFingerVisualizationEntities {
             let joint = handSkeleton.joint(jointName)

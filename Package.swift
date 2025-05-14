@@ -12,11 +12,13 @@ let package = Package(
             name: "HandTracking",
             targets: ["HandTracking"]),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(path: "DicyaninARKitSession")
+    ],
     targets: [
         .target(
             name: "HandTracking",
-            dependencies: []),
+            dependencies: ["DicyaninARKitSession"]),
         .testTarget(
             name: "HandTrackingTests",
             dependencies: ["HandTracking"]),
