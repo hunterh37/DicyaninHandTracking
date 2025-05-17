@@ -1,8 +1,4 @@
-/*
- * HandTracking
- * Created by Hunter Harris on 04/03/2025
- * Copyright © 2025 Dicyanin Labs. All rights reserved.
- */
+
 
 # HandTracking
 
@@ -23,7 +19,6 @@ HandTracking provides a simple and efficient way to implement hand tracking and 
 
 ## Requirements
 
-- iOS 17.0+
 - visionOS 1.0+
 - Xcode 15.0+
 - Swift 5.9+
@@ -32,7 +27,9 @@ HandTracking provides a simple and efficient way to implement hand tracking and 
 
 ### DicyaninARKitSession
 
-HandTracking depends on [DicyaninARKitSession](https://github.com/dicyanin/DicyaninARKitSession), a package that provides centralized ARKit session management. This dependency is necessary because:
+HandTracking depends on [DicyaninARKitSession]([https://github.com/dicyanin/DicyaninARKitSession](https://github.com/hunterh37/DicyaninHandSessionManager)),
+
+a package that provides centralized ARKit session management. This dependency is necessary because:
 
 - In visionOS, only one HandTrackingProvider can be active at a time
 - Multiple packages or components might need hand tracking data
