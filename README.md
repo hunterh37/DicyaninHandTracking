@@ -27,7 +27,7 @@ HandTracking provides a simple and efficient way to implement hand tracking and 
 
 ### DicyaninARKitSession
 
-HandTracking depends on [DicyaninARKitSession]([https://github.com/dicyanin/DicyaninARKitSession](https://github.com/hunterh37/DicyaninHandSessionManager)),
+HandTracking depends on [DicyaninHandSessionManager](https://github.com/hunterh37/DicyaninHandSessionManager),
 
 a package that provides centralized ARKit session management. This dependency is necessary because:
 
