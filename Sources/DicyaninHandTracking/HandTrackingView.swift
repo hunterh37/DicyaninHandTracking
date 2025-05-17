@@ -1,11 +1,11 @@
 import SwiftUI
 import RealityKit
-import HandTracking
+import DicyaninHandTracking
 import DicyaninARKitSession
 
 /// A SwiftUI view that implements hand tracking functionality
 public struct HandTrackingView: View {
-    @StateObject private var handTracking = HandTracking.shared
+    @StateObject private var handTracking = DicyaninHandTracking.shared
     @StateObject private var toolManager = ToolManager.shared
     private let showHandVisualizations: Bool
     private let tools: [Tool]
@@ -33,7 +33,7 @@ public struct HandTrackingView: View {
     public var body: some View {
         RealityView { content in
             // Register required components
-            HandTracking.registerComponents()
+            DicyaninHandTracking.registerComponents()
             
             // Configure tools
             toolManager.configureTools(tools)

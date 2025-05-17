@@ -2,25 +2,25 @@
 import PackageDescription
 
 let package = Package(
-    name: "HandTracking",
+    name: "DicyaninHandTracking",
     platforms: [
         .iOS(.v17),
         .visionOS(.v1)
     ],
     products: [
         .library(
-            name: "HandTracking",
-            targets: ["HandTracking"]),
+            name: "DicyaninHandTracking",
+            targets: ["DicyaninHandTracking"]),
     ],
     dependencies: [
         .package(path: "DicyaninARKitSession")
     ],
     targets: [
         .target(
-            name: "HandTracking",
+            name: "DicyaninHandTracking",
             dependencies: ["DicyaninARKitSession"]),
         .testTarget(
             name: "HandTrackingTests",
-            dependencies: ["HandTracking"]),
+            dependencies: ["DicyaninHandTracking"]),
     ]
 ) 

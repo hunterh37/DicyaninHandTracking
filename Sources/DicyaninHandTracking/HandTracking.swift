@@ -29,9 +29,9 @@ var rightHandEntity = Entity()
 var leftHandEntity = Entity()
 
 /// A class that manages hand tracking and gesture recognition
-public class HandTracking: HandTrackingProtocol {
+public class DicyaninHandTracking: HandTrackingProtocol {
     /// Shared instance of the hand tracking manager
-    public static let shared = HandTracking()
+    public static let shared = DicyaninHandTracking()
     
     private var cancellables = Set<AnyCancellable>()
     private var handTrackingCancellable: AnyCancellable?

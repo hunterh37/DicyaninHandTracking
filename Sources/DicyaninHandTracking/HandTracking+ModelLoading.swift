@@ -1,7 +1,7 @@
 import RealityKit
 import ARKit
 
-public extension HandTracking {
+public extension DicyaninHandTracking {
     /// Loads a 3D model and attaches it to the right hand entity
     /// - Parameters:
     ///   - modelName: The name of the model to load (without file extension)
