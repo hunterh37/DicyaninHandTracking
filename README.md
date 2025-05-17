@@ -143,17 +143,6 @@ Manages available tools and the currently active tool.
 <string>This app needs access to hand tracking to enable hand interaction features.</string>
 ```
 
-## Documentation
-
-For detailed documentation, please visit our [Documentation](https://handtracking.docs.example.com) site.
-
-## Contributing
-
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
