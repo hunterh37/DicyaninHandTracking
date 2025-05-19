@@ -2,16 +2,16 @@
 
 # HandTracking
 
-A Swift package for hand tracking and gesture recognition in visionOS and iOS applications.
+A Swift package for hand tracking and gesture recognition in visionOS applications.
 
 ## Overview
 
-HandTracking provides a simple and efficient way to implement hand tracking and gesture recognition in your visionOS and iOS applications. It offers a high-level API for tracking hand movements, detecting gestures, and managing hand interactions with 3D objects.
+HandTracking provides a simple and efficient way to implement hand tracking and gesture recognition in your visionOS applications. It offers a high-level API for tracking hand movements, detecting gestures, and managing hand interactions with 3D objects.
 
 ## Features
 
 - Hand tracking and gesture recognition
-- Support for both visionOS and iOS
+- Support for both visionOS 
 - Easy integration with RealityKit
 - Customizable hand visualization
 - Tool interaction system
@@ -143,17 +143,6 @@ Manages available tools and the currently active tool.
 <string>This app needs access to hand tracking to enable hand interaction features.</string>
 ```
 
-## Documentation
-
-For detailed documentation, please visit our [Documentation](https://handtracking.docs.example.com) site.
-
-## Contributing
-
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
