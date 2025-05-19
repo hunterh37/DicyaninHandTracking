@@ -132,7 +132,7 @@ public class DicyaninHandTracking: HandTrackingProtocol {
     }
     
     /// Removes any currently attached model from the right hand
-    func removeModelFromRightHand() {
+    public func removeModelFromRightHand() {
         Task { @MainActor in
             // Remove the current tool entity if it exists
             if let currentTool = currentToolEntity {

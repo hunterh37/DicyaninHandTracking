@@ -18,6 +18,50 @@ extension Entity {
         set { components[ToolCollisionTriggerComponent.self] = newValue }
     }
     
+    private func handleCollision(_ event: CollisionEvents.Began) {
+        print("💥 Collision detected between: \(event.entityA.name) and \(event.entityB.name)")
+        
+        // Check if this entity is involved in the collision
+        guard event.entityA == self || event.entityB == self else {
+            return
+        }
+        
+        guard let targetComponent = self.toolInteractionTarget,
+              let toolTrigger = event.entityA.toolCollisionTrigger ?? event.entityB.toolCollisionTrigger,
+              targetComponent.matchesCurrentStage(of: toolTrigger) else {
+            return
+        }
+        
+        print("✅ Valid collision detected")
+        
+        var trigger = toolTrigger
+        // Trigger the interaction
+        if trigger.progressToNextStage() {
+            // Update the tool's trigger
+            if let toolEntity = event.entityA as? ModelEntity ?? event.entityB as? ModelEntity {
+                toolEntity.toolCollisionTrigger = trigger
+            }
+            
+            // Mark this target as completed
+            var updatedComponent = targetComponent
+            updatedComponent.complete()
+            self.toolInteractionTarget = updatedComponent
+            
+            // Call the completion handler
+            targetComponent.onInteraction?()
+            print("🎯 Interaction completed")
+        }
+    }
+}
+
+// MARK: - Collision Groups
+public extension CollisionGroup {
+    static let tool = CollisionGroup(rawValue: 1 << 0)
+    static let interactionTarget = CollisionGroup(rawValue: 1 << 1)
+}
+
+// MARK: - Public Entity Extensions
+public extension Entity {
     /// Sets up a tool interaction target with proper collision handling
     func setupToolInteractionTarget(stage: Int, 
                                   interactionData: [String: Any]? = nil,
@@ -73,45 +117,4 @@ extension Entity {
             print("⚠️ No scene available for collision subscription")
         }
     }
-    
-    private func handleCollision(_ event: CollisionEvents.Began) {
-        print("💥 Collision detected between: \(event.entityA.name) and \(event.entityB.name)")
-        
-        // Check if this entity is involved in the collision
-        guard event.entityA == self || event.entityB == self else {
-            return
-        }
-        
-        guard let targetComponent = self.toolInteractionTarget,
-              let toolTrigger = event.entityA.toolCollisionTrigger ?? event.entityB.toolCollisionTrigger,
-              targetComponent.matchesCurrentStage(of: toolTrigger) else {
-            return
-        }
-        
-        print("✅ Valid collision detected")
-        
-        var trigger = toolTrigger
-        // Trigger the interaction
-        if trigger.progressToNextStage() {
-            // Update the tool's trigger
-            if let toolEntity = event.entityA as? ModelEntity ?? event.entityB as? ModelEntity {
-                toolEntity.toolCollisionTrigger = trigger
-            }
-            
-            // Mark this target as completed
-            var updatedComponent = targetComponent
-            updatedComponent.complete()
-            self.toolInteractionTarget = updatedComponent
-            
-            // Call the completion handler
-            targetComponent.onInteraction?()
-            print("🎯 Interaction completed")
-        }
-    }
-}
-
-// MARK: - Collision Groups
-extension CollisionGroup {
-    static let tool = CollisionGroup(rawValue: 1 << 0)
-    static let interactionTarget = CollisionGroup(rawValue: 1 << 1)
 } 
