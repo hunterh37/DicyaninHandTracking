@@ -40,9 +40,12 @@ extension Entity {
         )
         self.toolInteractionTarget = targetComponent
         
-        // Add collision component
+        // Get the actual bounds of the model
+        let bounds = self.visualBounds(relativeTo: nil)
+        
+        // Add collision component using the model's actual bounds
         let collisionComponent = CollisionComponent(
-            shapes: [.generateBox(size: .init(repeating: 0.1))],
+            shapes: [.generateBox(size: bounds.extents)],
             mode: .trigger,
             filter: CollisionFilter(
                 group: targetComponent.collisionGroup,
@@ -51,9 +54,9 @@ extension Entity {
         )
         components.set(collisionComponent)
         
-        // Add physics body for collision detection
+        // Add physics body using the same bounds
         let physicsBody = PhysicsBodyComponent(
-            shapes: [.generateBox(size: .init(repeating: 0.1))],
+            shapes: [.generateBox(size: bounds.extents)],
             mass: 0,
             mode: .static
         )
