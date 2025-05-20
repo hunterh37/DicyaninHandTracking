@@ -1,12 +1,12 @@
 
 
-# HandTracking
+# DicyaninHandTracking
 
 A Swift package for hand tracking and interactions with objects in visionOS applications.
 
 ## Overview
 
-HandTracking provides a simple and efficient way to implement hand tracking and gesture recognition in your visionOS applications. It offers a high-level API for tracking hand movements, detecting gestures, and managing hand interactions with 3D objects.
+DicyaninHandTracking provides a simple and efficient way to implement hand tracking and gesture recognition in your visionOS applications. It offers a high-level API for tracking hand movements, detecting gestures, and managing hand interactions with 3D objects.
 
 ## Features
 
@@ -52,7 +52,7 @@ Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/hunterh37/HandTracking.git", from: "0.0.1")
+    .package(url: "https://github.com/hunterh37/DicyaninHandTracking.git", from: "0.0.1")
 ]
 ```
 
