@@ -2,7 +2,7 @@
 
 # HandTracking
 
-A Swift package for hand tracking and gesture recognition in visionOS applications.
+A Swift package for hand tracking and interactions with objects in visionOS applications.
 
 ## Overview
 
