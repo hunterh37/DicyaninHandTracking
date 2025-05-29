@@ -1,5 +1,3 @@
-
-
 # HandTracking
 
 A Swift package for hand tracking and gesture recognition in visionOS applications.
@@ -73,6 +71,64 @@ let tools = [
     Tool(id: "flower", name: "Flower", modelName: "Flower")
 ]
 let customHandTrackingView = HandTrackingView(tools: tools)
+```
+
+### Using with RealityView
+
+Here's a complete example of how to use HandTracking in a visionOS app with RealityView:
+
+```swift
+import SwiftUI
+import RealityKit
+import HandTracking
+
+struct ContentView: View {
+    @State private var handTracking = HandTracking()
+    
+    var body: some View {
+        RealityView { content in
+            // Start hand tracking
+            handTracking.start(showHandVisualizations: true)
+            
+            // Add hand tracking visualization to the scene
+            if let handEntity = handTracking.controlRootEntity {
+                content.add(handEntity)
+            }
+            
+            // Add your 3D content here
+            let box = ModelEntity(mesh: .generateBox(size: 0.1))
+            box.position = SIMD3<Float>(0, 0, -0.5)
+            content.add(box)
+            
+            // Configure trigger entities for interaction
+            let leftTrigger = handTracking.configureTriggerEntity(
+                at: SIMD3<Float>(-0.3, 0, -0.5),
+                stage: 0,
+                interactionData: ["type": "leftButton"]
+            ) {
+                print("Left button pressed!")
+            }
+            
+            let rightTrigger = handTracking.configureTriggerEntity(
+                at: SIMD3<Float>(0.3, 0, -0.5),
+                stage: 0,
+                interactionData: ["type": "rightButton"]
+            ) {
+                print("Right button pressed!")
+            }
+            
+            // Add trigger entities to the scene
+            content.add(leftTrigger)
+            content.add(rightTrigger)
+            
+        } update: { content in
+            // Update hand tracking state
+            if let handEntity = handTracking.controlRootEntity {
+                content.add(handEntity)
+            }
+        }
+    }
+}
 ```
 
 ### Tool Interaction
