@@ -59,7 +59,7 @@ dependencies: [
 ### Basic Setup
 
 ```swift
-import HandTracking
+import DicyaninHandTracking
 import RealityKit
 
 // Create a hand tracking view
@@ -80,7 +80,7 @@ Here's a complete example of how to use HandTracking in a visionOS app with Real
 ```swift
 import SwiftUI
 import RealityKit
-import HandTracking
+import DicyaninHandTracking
 
 struct ContentView: View {
     @State private var handTracking = HandTracking()
