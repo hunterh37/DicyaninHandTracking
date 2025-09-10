@@ -12,8 +12,8 @@ let package = Package(
             name: "DicyaninHandTracking",
             targets: ["DicyaninHandTracking"]),
     ],
-    dependencies: [
-        .package(path: "DicyaninARKitSession")
+  dependencies: [
+        .package(url: "https://github.com/hunterh37/DicyaninARKitSession.git", from: "1.0.0")
     ],
     targets: [
         .target(
